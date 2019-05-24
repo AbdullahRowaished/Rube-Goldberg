@@ -13,11 +13,6 @@ public class RoboticArm : MonoBehaviour {
         rotated = false;
         rotations = 0;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        
-	}
 
     private void OnTriggerEnter(Collider other)
     {
