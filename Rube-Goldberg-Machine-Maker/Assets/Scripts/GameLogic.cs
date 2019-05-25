@@ -60,11 +60,11 @@ public class GameLogic : MonoBehaviour
     /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Collectable") && AntiCheat.cheating)
+        if (other.gameObject.CompareTag("Collectable") && !AntiCheat.cheating)
         {
             EatStar(other.gameObject);
         }
-        else if (other.gameObject.CompareTag("Goal") && AntiCheat.cheating)
+        else if (other.gameObject.CompareTag("Goal"))
         {
             if (starsCollected)
             {
@@ -105,7 +105,7 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     private void ResetGame()
     {
-        Debug.Log("Game Reset!");
+        DebugManager.Info("Game Reset!");
         ResetBall();
         RemoveMachineObjects();
         ResetStars();
@@ -158,7 +158,7 @@ public class GameLogic : MonoBehaviour
     private void WinGame()
     {
         ResetBall();
-        Debug.Log("Game Won!");
+        DebugManager.Info("Game Won!");
         if (level >= 4)
         {
             level = 0;
