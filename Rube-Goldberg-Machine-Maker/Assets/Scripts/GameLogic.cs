@@ -15,7 +15,7 @@ public class GameLogic : MonoBehaviour
     private Quaternion rotation; //ball initial rotation
     private int level; //currently loaded level
     private List<GameObject> collectedList; //collectables that have been collected
-    private bool starsCollected, ballThrowing, playerInside, isCheating; //some GameLogic bools for winning and anti cheat
+    private bool starsCollected; //GameLogic bool for winning
 
 
     // Use this for initialization
@@ -26,11 +26,7 @@ public class GameLogic : MonoBehaviour
         z = transform.position.z;
         rotation = transform.rotation;
         starsCollected = false;
-        ballThrowing = false;
-        playerInside = true;
-        isCheating = false;
         collectedList = new List<GameObject>();
-        ballThrowing = false;
         //Don't destroy on load is use for the ball and Factory to persist throughout the game.
         DontDestroyOnLoad(this);
         DontDestroyOnLoad(GameObject.Find("Factory"));
@@ -42,14 +38,6 @@ public class GameLogic : MonoBehaviour
         if (transform.position.y < 0) //if ball falls off y=0, game will be reset
         {
             ResetGame();
-        }
-        CheckPlayerPosition(); //sets playerInside bool
-        isCheating = ballThrowing && !playerInside; //determines if user cheats
-
-        CheatingIndicator(); //applies proper material to ball
-        if (isCheating)
-        {
-            //Debug.Log("Is Cheating? " + isCheating + "\n" + "Ball being Thrown? " + ballThrowing + "\n" + "Is player Inside? " + playerInside);
         }
     }
 
@@ -63,33 +51,20 @@ public class GameLogic : MonoBehaviour
         {
             ResetGame();
         }
-        else if (collision.gameObject.CompareTag("Platform"))
-        {
-            ballThrowing = false;
-        }
     }
-    /// <summary>
-    /// Checks if ball leaves platform to determine if it's being thrown.
-    /// </summary>
-    /// <param name="collision"></param>
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            ballThrowing = true;
-        }
-    }
+   
+
     /// <summary>
     /// Collects stars and determines if player has won.
     /// </summary>
     /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Collectable") && !isCheating)
+        if (other.gameObject.CompareTag("Collectable") && AntiCheat.cheating)
         {
             EatStar(other.gameObject);
         }
-        else if (other.gameObject.CompareTag("Goal") && !isCheating)
+        else if (other.gameObject.CompareTag("Goal") && AntiCheat.cheating)
         {
             if (starsCollected)
             {
@@ -103,33 +78,13 @@ public class GameLogic : MonoBehaviour
         }
     }
     /// <summary>
-    /// Checks if player is within bounds of platform or is still making their Rube Goldberg.
-    /// </summary>
-    private void CheckPlayerPosition()
-    {
-        Vector3 upperbound, lowerbound;
-        upperbound = new Vector3(1, 2, 1);
-        lowerbound = new Vector3(-1, 0, -1);
-        GameObject player = GameObject.Find("VRCameraRig");
-        if (!(player.transform.position.x <= upperbound.x && player.transform.position.x >= lowerbound.x) ||
-            !(player.transform.position.y <= upperbound.y && player.transform.position.y >= lowerbound.y) ||
-            !(player.transform.position.z <= upperbound.x && player.transform.position.x >= lowerbound.z))
-        {
-            playerInside = true;
-        }
-        else
-        {
-            playerInside = false;
-        }
-    }
-    /// <summary>
-    /// Applies Active for cheating state and Inactive for fairplay state.
+    /// Checks if player is cheating or not.
     /// </summary>
     private void CheatingIndicator()
     {
         Material mat = active;
 
-        if (!playerInside)
+        if (AntiCheat.cheating)
         {
             mat = inactive;
         }
@@ -163,7 +118,7 @@ public class GameLogic : MonoBehaviour
         MenuRotator menuRotator = GameObject.Find("ObjectMenu").GetComponent<MenuRotator>();
         foreach (GameObject spawn in menuRotator.spawnedObjects)
         {
-            Debug.Log(spawn.ToString());
+            DebugManager.Info(spawn.ToString());
             Destroy(spawn);
         }
         menuRotator.spawnedObjects.RemoveRange(0, menuRotator.spawnedObjects.Count);
@@ -259,7 +214,7 @@ public class GameLogic : MonoBehaviour
                 starsList.Add(GameObject.Find("Star 5"));
                 break;
         }
-        Debug.Log("Level is: " + level);
+        DebugManager.Info("Level is: " + level);
         menuTemp.name = "ObjectMenu";
         menuTemp.transform.SetParent(GameObject.Find("LeftHand").transform);
         menuTemp.transform.localPosition.Set(0, 0.2f, 0);
