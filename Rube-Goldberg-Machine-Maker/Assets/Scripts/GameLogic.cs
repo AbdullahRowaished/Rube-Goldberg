@@ -7,16 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class GameLogic : MonoBehaviour
 {
-    public List<GameObject> objectMenuPrefabs; //Object Menu List for each level
-    public List<GameObject> starsList = new List<GameObject>(); //List of collectables
+    public List<GameObject> objectMenuList; //Object Menu List for each level
+    public List<GameObject> starsList = new List<GameObject>(5); //List of collectables
     public Material active, inactive; //Materials for cheating and not cheating
 
     private float x, y, z; //ball initial coordinates
-    private Quaternion rotation; //ball initial rotation
+    private Quaternion r; //ball initial rotation
     private int level; //currently loaded level
     private bool starsCollected; //GameLogic bool for winning
-    private List<GameObject> objectMenuList;
     private GameObject objectMenu = null;
+    private Transform leftHandTransform;
 
 
     // Use this for initialization
@@ -25,13 +25,10 @@ public class GameLogic : MonoBehaviour
         x = transform.position.x;
         y = transform.position.y + 1;
         z = transform.position.z;
-        rotation = transform.rotation;
+        r = transform.rotation;
         starsCollected = false;
-        objectMenuList = new List<GameObject>(4);
-        for (int i = 0; i < objectMenuPrefabs.Count; i++)
-        {
-            objectMenuList[i] = Instantiate(objectMenuPrefabs[i]);
-        }
+
+        leftHandTransform = GameObject.Find("LeftHand").transform;
 
         //Don't destroy on load is use for the ball and Factory to persist throughout the game.
         DontDestroyOnLoad(this);
@@ -93,7 +90,7 @@ public class GameLogic : MonoBehaviour
     private void ResetBall()
     {
         gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        gameObject.transform.SetPositionAndRotation(new Vector3(x, y, z), rotation);
+        gameObject.transform.SetPositionAndRotation(new Vector3(x, y, z), r);
         gameObject.GetComponent<Rigidbody>().isKinematic = false;
         gameObject.GetComponent<Collider>().enabled = true;
     }
@@ -112,12 +109,9 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     private void RemoveObjects()
     {
-        //DebugManager.Info("ObjectMenu: " + GameObject.Find("ObjectMenu").name);
-        //DebugManager.Info("MenuRotator: " + GameObject.Find("ObjectMenu").GetComponent<MenuRotator>().name);
-        MenuRotator menuRotator = GameObject.Find("ObjectMenu").GetComponent<MenuRotator>();
+        MenuRotator menuRotator = objectMenu.GetComponent<MenuRotator>();
         foreach (GameObject spawn in menuRotator.spawnedObjects)
         {
-            DebugManager.Info(spawn.ToString());
             Destroy(spawn);
         }
         menuRotator.spawnedObjects.RemoveRange(0, menuRotator.spawnedObjects.Count);
@@ -177,21 +171,10 @@ public class GameLogic : MonoBehaviour
     /// <param name="lsm"></param>
     private void OnLevelFinishedLoading(Scene scene, LoadSceneMode lsm)
     {
-
-        if (objectMenu != null)
-        {
-            objectMenu.SetActive(false);
-        }
-
-        objectMenu = objectMenuList[level];
-        Transform parent = GameObject.Find("LeftHand").transform;
-        objectMenu.transform.SetParent(transform);
-        objectMenu.transform.SetPositionAndRotation(transform.position + new Vector3(0, 0.2f, 0), transform.rotation);
-        objectMenu.SetActive(true);
-
         switch (scene.name)
         {
             case "Level1":
+                level = 0;
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 break;
@@ -214,10 +197,17 @@ public class GameLogic : MonoBehaviour
                 starsList.Add(GameObject.Find("Star 5"));
                 break;
         }
-        DebugManager.Info("Level is: " + level);
-        
 
+        if (objectMenu != null)
+        {
+        objectMenu.SetActive(false);
+        }
+        
+        objectMenu = objectMenuList[level];
+        objectMenu.SetActive(true);
+        
         level++;
+        //DebugManager.Info("Level to be loaded is: " + level);
     }
     /// <summary>
     /// As the ball GameObject gets instantiated with the static SceneManager.sceneLoaded method call, OnLevelFinishedLoading gets called. Replacement for the deprecated OnLevelHasLoaded override.

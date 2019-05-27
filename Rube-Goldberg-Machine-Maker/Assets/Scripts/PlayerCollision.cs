@@ -18,7 +18,6 @@ public class PlayerCollision : MonoBehaviour {
     private void Update()
     {
         AntiCheatCheck();
-        DebugManager.Info(playerInside + " " + ballInside);
     }
 
     private void OnTriggerStay(Collider other)
@@ -50,24 +49,19 @@ public class PlayerCollision : MonoBehaviour {
 
         if (AntiCheat.cheating)
         {
-            DebugManager.Info("Cheating: " + AntiCheat.cheating);
             mat = active;
-            DebugManager.Info("Active: " + mat.name);
         }
         else
         {
             mat = inactive;
-            DebugManager.Info("Inactive: " + mat.name);
         }
 
         if (appliedMAT.name.Equals(mat.name))
         {
-            DebugManager.Info("No Change in Material");
             return;
         }
         else
         {
-            DebugManager.Info("Material Changed");
             ball.GetComponent<MeshRenderer>().material = mat;
         }
     }

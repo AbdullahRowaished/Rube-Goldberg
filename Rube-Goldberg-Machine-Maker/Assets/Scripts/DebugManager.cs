@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DebugManager : MonoBehaviour
 {
-    public static bool isDebugging = false;
+    public static bool isDebugging = true;
     public static DebugManager debugManager;
 
     private void Start()
