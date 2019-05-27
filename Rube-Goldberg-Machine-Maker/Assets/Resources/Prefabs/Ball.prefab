@@ -115,7 +115,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754818c076b5b604c86ee6fbfe6af31f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuRotatorList: []
+  menuRotatorList:
+  - {fileID: 1500631350126538, guid: 11ab285982e63854497102ed6b45cd8c, type: 2}
+  - {fileID: 1500631350126538, guid: 5bd4273fce202754cafeb6d6d8ac6fe0, type: 2}
+  - {fileID: 1500631350126538, guid: 8587c3592e9c8dd48b8b2473a5e9ee92, type: 2}
+  - {fileID: 1500631350126538, guid: 8c33584f7773e574487bf9a300e0a14a, type: 2}
   starsList: []
   active: {fileID: 2100000, guid: 156347396dbacc342bf96ace9fc0cf83, type: 2}
   inactive: {fileID: 2100000, guid: eedc108c0e1bb694bb31ac3b4902d7fb, type: 2}

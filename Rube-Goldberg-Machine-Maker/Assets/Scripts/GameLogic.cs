@@ -7,15 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class GameLogic : MonoBehaviour
 {
-    public List<GameObject> menuRotatorList; //Object Menu List for each level
-    public List<GameObject> starsList; //List of collectables
+    public List<GameObject> objectMenuPrefabs; //Object Menu List for each level
+    public List<GameObject> starsList = new List<GameObject>(); //List of collectables
     public Material active, inactive; //Materials for cheating and not cheating
 
     private float x, y, z; //ball initial coordinates
     private Quaternion rotation; //ball initial rotation
     private int level; //currently loaded level
-    private List<GameObject> collectedList; //collectables that have been collected
     private bool starsCollected; //GameLogic bool for winning
+    private List<GameObject> objectMenuList;
+    private GameObject objectMenu = null;
 
 
     // Use this for initialization
@@ -26,19 +27,16 @@ public class GameLogic : MonoBehaviour
         z = transform.position.z;
         rotation = transform.rotation;
         starsCollected = false;
-        collectedList = new List<GameObject>();
+        objectMenuList = new List<GameObject>(4);
+        for (int i = 0; i < objectMenuPrefabs.Count; i++)
+        {
+            objectMenuList[i] = Instantiate(objectMenuPrefabs[i]);
+        }
+
         //Don't destroy on load is use for the ball and Factory to persist throughout the game.
         DontDestroyOnLoad(this);
         DontDestroyOnLoad(GameObject.Find("Factory"));
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (transform.position.y < 0) //if ball falls off y=0, game will be reset
-        {
-            ResetGame();
-        }
+        DontDestroyOnLoad(GameObject.Find("Ground"));
     }
 
     /// <summary>
@@ -52,7 +50,6 @@ public class GameLogic : MonoBehaviour
             ResetGame();
         }
     }
-   
 
     /// <summary>
     /// Collects stars and determines if player has won.
@@ -68,7 +65,6 @@ public class GameLogic : MonoBehaviour
         {
             if (starsCollected)
             {
-                gameObject.GetComponent<Collider>().enabled = false;
                 WinGame();
             }
             else
@@ -77,17 +73,18 @@ public class GameLogic : MonoBehaviour
             }
         }
     }
+
     /// <summary>
     /// Checks if player is cheating or not.
     /// </summary>
     private void CheatingIndicator()
     {
         Material mat = active;
-
         if (AntiCheat.cheating)
         {
             mat = inactive;
         }
+
         GetComponent<MeshRenderer>().material = mat;
     }
     /// <summary>
@@ -107,14 +104,16 @@ public class GameLogic : MonoBehaviour
     {
         DebugManager.Info("Game Reset!");
         ResetBall();
-        RemoveMachineObjects();
+        RemoveObjects();
         ResetStars();
     }
     /// <summary>
     /// Upon resetting the game, all spawned objects will be removed.
     /// </summary>
-    private void RemoveMachineObjects()
+    private void RemoveObjects()
     {
+        //DebugManager.Info("ObjectMenu: " + GameObject.Find("ObjectMenu").name);
+        //DebugManager.Info("MenuRotator: " + GameObject.Find("ObjectMenu").GetComponent<MenuRotator>().name);
         MenuRotator menuRotator = GameObject.Find("ObjectMenu").GetComponent<MenuRotator>();
         foreach (GameObject spawn in menuRotator.spawnedObjects)
         {
@@ -128,14 +127,9 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     private void ResetStars()
     {
-        if (collectedList.Count > 0)
+        foreach (GameObject star in starsList)
         {
-            starsList.AddRange(collectedList);
-            collectedList.RemoveRange(0, collectedList.Count - 1);
-            foreach (GameObject star in starsList)
-            {
-                star.SetActive(true);
-            }
+            star.SetActive(true);
         }
     }
     /// <summary>
@@ -144,12 +138,16 @@ public class GameLogic : MonoBehaviour
     /// <param name="eaten"></param>
     private void EatStar(GameObject eaten)
     {
-        starsList.Remove(eaten);
-        collectedList.Add(eaten);
         eaten.SetActive(false);
-        if (starsList.Count == 0)
+        starsCollected = true;
+        foreach (GameObject star in starsList)
         {
-            starsCollected = true;
+            
+            if (star.activeSelf)
+            {
+                starsCollected = false;
+                break;
+            }
         }
     }
     /// <summary>
@@ -179,34 +177,36 @@ public class GameLogic : MonoBehaviour
     /// <param name="lsm"></param>
     private void OnLevelFinishedLoading(Scene scene, LoadSceneMode lsm)
     {
-        level++;
-        collectedList = new List<GameObject>();
-        starsList = new List<GameObject>();
-        Destroy(GameObject.Find("ObjectMenu"));
-        GameObject menuTemp = null;
+
+        if (objectMenu != null)
+        {
+            objectMenu.SetActive(false);
+        }
+
+        objectMenu = objectMenuList[level];
+        Transform parent = GameObject.Find("LeftHand").transform;
+        objectMenu.transform.SetParent(transform);
+        objectMenu.transform.SetPositionAndRotation(transform.position + new Vector3(0, 0.2f, 0), transform.rotation);
+        objectMenu.SetActive(true);
 
         switch (scene.name)
         {
             case "Level1":
-                menuTemp = Instantiate(menuRotatorList[0]);
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 break;
             case "Level2":
-                menuTemp = Instantiate(menuRotatorList[1]);
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 starsList.Add(GameObject.Find("Star 3"));
                 break;
             case "Level3":
-                menuTemp = Instantiate(menuRotatorList[2]);
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 starsList.Add(GameObject.Find("Star 3"));
                 starsList.Add(GameObject.Find("Star 4"));
                 break;
             case "Level4":
-                menuTemp = Instantiate(menuRotatorList[3]);
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 starsList.Add(GameObject.Find("Star 3"));
@@ -215,9 +215,9 @@ public class GameLogic : MonoBehaviour
                 break;
         }
         DebugManager.Info("Level is: " + level);
-        menuTemp.name = "ObjectMenu";
-        menuTemp.transform.SetParent(GameObject.Find("LeftHand").transform);
-        menuTemp.transform.localPosition.Set(0, 0.2f, 0);
+        
+
+        level++;
     }
     /// <summary>
     /// As the ball GameObject gets instantiated with the static SceneManager.sceneLoaded method call, OnLevelFinishedLoading gets called. Replacement for the deprecated OnLevelHasLoaded override.
