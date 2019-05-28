@@ -232,8 +232,11 @@
             },
             {
                "inputs" : {
-                  "touch" : {
+                  "click" : {
                      "output" : "/actions/default/in/teleport"
+                  },
+                  "position" : {
+                     "output" : "/actions/default/in/camerarotate"
                   }
                },
                "mode" : "joystick",
