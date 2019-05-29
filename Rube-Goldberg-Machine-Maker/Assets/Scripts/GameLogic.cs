@@ -13,7 +13,6 @@ public class GameLogic : MonoBehaviour
 
     private float x, y, z; //ball initial coordinates
     private Quaternion r; //ball initial rotation
-    private int level; //currently loaded level
     private bool starsCollected; //GameLogic bool for winning
     private GameObject objectMenu = null;
     private Transform leftHandTransform;
@@ -151,9 +150,9 @@ public class GameLogic : MonoBehaviour
     {
         ResetBall();
         DebugManager.Info("Game Won!");
-        if (level >= 4)
+        if (Level.value >= 4)
         {
-            level = 0;
+            Level.value = 0;
         }
         LoadNextScene();
     }
@@ -162,7 +161,7 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     private void LoadNextScene()
     {
-        SteamVR_LoadLevel.Begin("Level" + (level + 1), true, 3);
+        SteamVR_LoadLevel.Begin("Level" + (Level.value + 1), true, 3);
     }
     /// <summary>
     /// Used for the delegate SceneManager.sceneLoaded. Applies everytime a new scene has loaded, including the first scene.
@@ -174,7 +173,7 @@ public class GameLogic : MonoBehaviour
         switch (scene.name)
         {
             case "Level1":
-                level = 0;
+                Level.value = 0;
                 starsList.Add(GameObject.Find("Star 1"));
                 starsList.Add(GameObject.Find("Star 2"));
                 break;
@@ -203,10 +202,10 @@ public class GameLogic : MonoBehaviour
         objectMenu.SetActive(false);
         }
         
-        objectMenu = objectMenuList[level];
+        objectMenu = objectMenuList[Level.value];
         objectMenu.SetActive(true);
         
-        level++;
+        Level.value++;
         //DebugManager.Info("Level to be loaded is: " + level);
     }
     /// <summary>
