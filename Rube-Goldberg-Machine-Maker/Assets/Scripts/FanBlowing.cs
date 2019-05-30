@@ -6,7 +6,10 @@ public class FanBlowing : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        other.gameObject.transform.SetParent(this.transform);
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            other.gameObject.transform.SetParent(this.transform);
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -20,7 +23,10 @@ public class FanBlowing : MonoBehaviour {
 
     private void OnTriggerExit(Collider other)
     {
-        other.gameObject.transform.SetParent(null);
-        DontDestroyOnLoad(other.gameObject);
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            other.gameObject.transform.SetParent(null);
+            DontDestroyOnLoad(other.gameObject);
+        }
     }
 }
