@@ -4,24 +4,29 @@ using UnityEngine;
 
 public class FanBlowing : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            other.gameObject.transform.SetParent(this.transform);
+        }
+    }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Ball"))
         {
             //Fan produces blowing air effect.
-            Vector3 direction = transform.localRotation * transform.forward;
-            Debug.Log(direction.ToString());
-            other.gameObject.GetComponent<Rigidbody>().AddForce(direction * 10, ForceMode.Force);
+            other.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 1.5f, ForceMode.Force);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            other.gameObject.transform.SetParent(null);
+            DontDestroyOnLoad(other.gameObject);
         }
     }
 }

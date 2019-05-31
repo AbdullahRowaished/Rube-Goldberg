@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.vrnd_c8a_projectassetpack.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\Xenos\\Unity Projects\\HIVR\\High-Immersion-Starter-Project-master\\actions.json",
+      "action_manifest_path": "C:\\Users\\Xenos\\Repos\\Rube-Goldberg\\Rube-Goldberg\\Rube-Goldberg-Machine-Maker\\actions.json",
       "strings": {
         "en_us": {
           "name": "VRND_C8A_ProjectAssetPack [Testing]"
