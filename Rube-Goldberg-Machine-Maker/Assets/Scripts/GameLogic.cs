@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class GameLogic : MonoBehaviour
 {
     public List<GameObject> objectMenuList; //Object Menu List for each level
-    public List<GameObject> starsList = new List<GameObject>(5); //List of collectables
+    public List<GameObject> starsList; //List of collectables
     public Material active, inactive; //Materials for cheating and not cheating
 
     private float x, y, z; //ball initial coordinates
@@ -174,26 +174,38 @@ public class GameLogic : MonoBehaviour
         {
             case "Level1":
                 Level.value = 0;
-                starsList.Add(GameObject.Find("Star 1"));
-                starsList.Add(GameObject.Find("Star 2"));
+                starsList = new List<GameObject>(2)
+                {
+                    GameObject.Find("Star 1"),
+                    GameObject.Find("Star 2")
+                };
                 break;
             case "Level2":
-                starsList.Add(GameObject.Find("Star 1"));
-                starsList.Add(GameObject.Find("Star 2"));
-                starsList.Add(GameObject.Find("Star 3"));
+                starsList = new List<GameObject>(3)
+                {
+                    GameObject.Find("Star 1"),
+                    GameObject.Find("Star 2"),
+                    GameObject.Find("Star 3")
+                };
                 break;
             case "Level3":
-                starsList.Add(GameObject.Find("Star 1"));
-                starsList.Add(GameObject.Find("Star 2"));
-                starsList.Add(GameObject.Find("Star 3"));
-                starsList.Add(GameObject.Find("Star 4"));
+                starsList = new List<GameObject>(4)
+                {
+                    GameObject.Find("Star 1"),
+                    GameObject.Find("Star 2"),
+                    GameObject.Find("Star 3"),
+                    GameObject.Find("Star 4")
+                };
                 break;
             case "Level4":
-                starsList.Add(GameObject.Find("Star 1"));
-                starsList.Add(GameObject.Find("Star 2"));
-                starsList.Add(GameObject.Find("Star 3"));
-                starsList.Add(GameObject.Find("Star 4"));
-                starsList.Add(GameObject.Find("Star 5"));
+                starsList = new List<GameObject>(5)
+                {
+                    GameObject.Find("Star 1"),
+                    GameObject.Find("Star 2"),
+                    GameObject.Find("Star 3"),
+                    GameObject.Find("Star 4"),
+                    GameObject.Find("Star 5")
+                };
                 break;
         }
 
