@@ -161,7 +161,7 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     private void LoadNextScene()
     {
-        SteamVR_LoadLevel.Begin("Level" + (Level.value + 1), true, 3);
+        SteamVR_LoadLevel.Begin("Level" + (Level.value + 1), false, 3);
     }
     /// <summary>
     /// Used for the delegate SceneManager.sceneLoaded. Applies everytime a new scene has loaded, including the first scene.
